@@ -1,21 +1,36 @@
 import {
   Button,
   Checkbox,
+  Divider,
   Flex,
   FormControl,
   FormHelperText,
   FormLabel,
   Heading,
   Input,
-  Link,
   Text,
 } from "@chakra-ui/react";
 import { colors } from "../../styles/colors";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { signInWithGoogle } = useAuth();
+
+  const navigate = useNavigate();
+
+  async function handleGoogleSignIn() {
+    await signInWithGoogle()
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <Flex w="100vw" h="100vh">
@@ -107,39 +122,69 @@ export function Login() {
               </Text>
             </Flex>
             <Link
-              fontFamily="Poppins"
-              fontSize="14px"
-              color={colors.texts.complement}
+              style={{
+                fontFamily: "Poppins",
+                fontSize: "14px",
+                color: colors.texts.complement,
+                textDecoration: `underline`,
+              }}
+              to="/resetpassword"
             >
               Esqueci minha senha
             </Link>
           </Flex>
-          <Button
-            w="100%"
-            p="16px 152px"
-            mt="56px"
-            h="56px"
-            borderRadius="8px"
-            bgColor={colors.green}
-            color="#FFF"
-            fontFamily="Poppins"
-            isDisabled={
-              email.length >= 10 && password.length >= 8 ? false : true
-            }
-            colorScheme="none"
-          >
-            Entrar
-          </Button>
+          <Flex direction="column" align="center">
+            <Button
+              w="100%"
+              p="16px 152px"
+              mt="56px"
+              h="56px"
+              borderRadius="8px"
+              bgColor={colors.primary}
+              color="#FFF"
+              fontFamily="Poppins"
+              isDisabled={
+                email.length >= 10 && password.length >= 8 ? false : true
+              }
+              colorScheme="none"
+            >
+              Entrar
+            </Button>
+
+            <Text mt="10px" mb="10px">
+              ou
+            </Text>
+
+            <Button
+              w="100%"
+              p="16px 152px"
+              h="56px"
+              borderRadius="8px"
+              bgColor="#E2E8F0"
+              color="#1A202C"
+              fontFamily="Poppins"
+              colorScheme="none"
+              gap="16px"
+              fontSize="14px"
+              onClick={handleGoogleSignIn}
+            >
+              Entrar com o Google{" "}
+              <img src="/images/icons/google.png" alt="google" width="26px" />
+            </Button>
+          </Flex>
         </Flex>
         <Flex mt="128px" justifyContent="space-between" w="352px">
           <Text color={colors.texts.base} fontFamily="Poppins" fontSize="16px">
             Não tem conta? <br />{" "}
             <Link
-              fontFamily="Poppins"
-              color={colors.primary}
-              textDecoration="underline"
-              fontSize="16px"
-              fontWeight="semibold"
+              style={{
+                fontFamily: "Poppins",
+                fontSize: "16px",
+                textDecoration: `underline`,
+                fontWeight: "semibold",
+                color: colors.primary,
+              }}
+              to="/register"
             >
               Cadastre-se
             </Link>
