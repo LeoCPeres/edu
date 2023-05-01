@@ -8,6 +8,7 @@ import {
 } from "react";
 import { auth, db, provider } from "../firebase";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 type User = {
   id: string;
