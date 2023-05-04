@@ -34,7 +34,6 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
         const { displayName, photoURL, uid } = user;
 
         if (!displayName || !photoURL) {

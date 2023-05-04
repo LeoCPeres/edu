@@ -42,15 +42,13 @@ export function Navbar() {
       .catch((error) => console.log(error));
   }
 
-  console.log(whichStage(location.pathname));
-
   return (
     <Flex
       w="100%"
       justify="space-between"
       align="center"
       paddingY="24px"
-      paddingX="200px"
+      paddingX="250px"
       bgColor={colors.primary}
       display={whichStage(location.pathname) == true ? "flex" : "none"}
     >
