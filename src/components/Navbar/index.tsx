@@ -31,6 +31,7 @@ export function Navbar() {
   const whichStage = (route: string) =>
     ({
       "/": true,
+      "/teacher/register": true,
     }[route] as boolean);
 
   async function handleLogOut() {
@@ -49,7 +50,7 @@ export function Navbar() {
       align="center"
       paddingY="24px"
       paddingX="250px"
-      bgColor={colors.primary}
+      bgColor={location.pathname == "/" ? colors.primary : colors.primaryDark}
       display={whichStage(location.pathname) == true ? "flex" : "none"}
     >
       <Flex align="center" gap="16px" borderRadius="40px">
@@ -69,7 +70,10 @@ export function Navbar() {
         padding="0px"
         bg={colors.primary}
         colorScheme="none"
-        style={{ filter: `brightness(0.9)` }}
+        style={{
+          filter:
+            location.pathname == "/" ? `brightness(0.9)` : `brightness(0.8)`,
+        }}
         onClick={() => onOpen()}
       >
         <FiPower />
