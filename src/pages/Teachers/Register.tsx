@@ -16,9 +16,13 @@ import {
 import { colors } from "../../styles/colors";
 import { useAuth } from "../../contexts/AuthContext";
 import { Modal } from "../../components/Modal";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { generateUUID } from "../../utils/generateGUID";
+import { unformatPrice } from "../../utils/unformatCurrency";
+import { formatPrice } from "../../utils/formatCurrency";
 
 type ScheduleType = {
+  id: string;
   week_day: string;
   from: string;
   to: string;
@@ -26,6 +30,10 @@ type ScheduleType = {
 
 export function RegisterTeacher() {
   const { user } = useAuth();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [biography, setBiography] = useState("");
+  const [price, setPrice] = useState<number>(0);
+
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [scheduleItems, setScheduleItems] = useState<ScheduleType[]>([]);
   const [day, setDay] = useState("");
@@ -36,16 +44,47 @@ export function RegisterTeacher() {
     setScheduleItems([
       ...scheduleItems,
       {
+        id: generateUUID(),
         week_day: day,
         from,
         to,
       },
     ]);
+
     setDay("");
     setFrom("");
     setTo("");
     onClose();
   }
+
+  function handleDeleteSchedule(id: string) {
+    const newScheduleItems = scheduleItems.filter(
+      (schedule) => schedule.id !== id
+    );
+
+    setScheduleItems(newScheduleItems);
+  }
+
+  const handlePhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const inputPhoneNumber = event.target.value;
+    const formattedPhoneNumber = inputPhoneNumber.replace(/\D/g, ""); // Remove todos os caracteres não numéricos
+    setPhoneNumber(formattedPhoneNumber);
+  };
+
+  const formatPhoneNumber = (phoneNumber: string) => {
+    if (phoneNumber.length === 0) return `(  )`;
+
+    if (phoneNumber.length <= 2) {
+      return `(${phoneNumber})`;
+    } else if (phoneNumber.length <= 7) {
+      return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+    } else {
+      return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(
+        2,
+        7
+      )}-${phoneNumber.slice(7)}`;
+    }
+  };
 
   return (
     <Flex direction="column">
@@ -115,14 +154,30 @@ export function RegisterTeacher() {
               <Box>
                 <FormControl>
                   <FormLabel>Whatsapp</FormLabel>
-                  <Input type="tel" placeholder="(  )" />
+                  <Input
+                    type="tel"
+                    placeholder="(  )"
+                    value={formatPhoneNumber(phoneNumber)}
+                    onChange={handlePhoneNumberChange}
+                    maxLength={15}
+                  />
                 </FormControl>
               </Box>
             </Flex>
 
             <FormControl mt="32px">
-              <FormLabel>Biografia (Máximo 300 caracteres)</FormLabel>
-              <Textarea minH="168px" />
+              <FormLabel>
+                <>
+                  Biografia (Máximo 400 caracteres)
+                  {biography.length > 0 ? ` - (${biography.length})` : ""}
+                </>
+              </FormLabel>
+              <Textarea
+                minH="168px"
+                maxLength={400}
+                value={biography}
+                onChange={(e) => setBiography(e.target.value)}
+              />
             </FormControl>
 
             <Text
@@ -149,7 +204,12 @@ export function RegisterTeacher() {
               </Box>
               <FormControl mt="32px">
                 <FormLabel>Custo da sua hora por aula</FormLabel>
-                <Input type="text" placeholder="R$" />
+                <Input
+                  type="text"
+                  placeholder="R$"
+                  value={formatPrice(price)}
+                  onChange={(e) => setPrice(unformatPrice(e.target.value))}
+                />
               </FormControl>
             </Flex>
 
@@ -173,36 +233,61 @@ export function RegisterTeacher() {
 
             {scheduleItems.map((schedule) => {
               return (
-                <Flex justify="space-between" gap="16px">
-                  <Box minW="50%">
-                    <FormControl mt="32px">
-                      <FormLabel>Dia da semana</FormLabel>
-                      <Select
-                        placeholder="Selecione o dia"
-                        isDisabled
-                        value={schedule.week_day}
-                      >
-                        <option value="seg">Segunda-feira</option>
-                        <option value="ter">Terça-feira</option>
-                        <option value="qua">Quarta-feira</option>
-                        <option value="qui">Quinta-feira</option>
-                        <option value="sex">Sexta-feira</option>
-                        <option value="sab">Sábado</option>
-                        <option value="dom">Domingo</option>
-                      </Select>
-                    </FormControl>
-                  </Box>
-                  <Flex gap="16px">
-                    <FormControl mt="32px">
-                      <FormLabel>Das</FormLabel>
-                      <Input type="text" isDisabled value={schedule.from} />
-                    </FormControl>
-                    <FormControl mt="32px">
-                      <FormLabel>Até</FormLabel>
-                      <Input type="text" isDisabled value={schedule.to} />
-                    </FormControl>
+                <>
+                  <Flex justify="space-between" gap="16px">
+                    <Box minW="50%">
+                      <FormControl mt="32px">
+                        <FormLabel>Dia da semana</FormLabel>
+                        <Select
+                          placeholder="Selecione o dia"
+                          isDisabled
+                          value={schedule.week_day}
+                        >
+                          <option value="seg">Segunda-feira</option>
+                          <option value="ter">Terça-feira</option>
+                          <option value="qua">Quarta-feira</option>
+                          <option value="qui">Quinta-feira</option>
+                          <option value="sex">Sexta-feira</option>
+                          <option value="sab">Sábado</option>
+                          <option value="dom">Domingo</option>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                    <Flex gap="16px">
+                      <FormControl mt="32px">
+                        <FormLabel>Das</FormLabel>
+                        <Input type="text" isDisabled value={schedule.from} />
+                      </FormControl>
+                      <FormControl mt="32px">
+                        <FormLabel>Até</FormLabel>
+                        <Input type="text" isDisabled value={schedule.to} />
+                      </FormControl>
+                    </Flex>
                   </Flex>
-                </Flex>
+                  <Flex
+                    gap="24px"
+                    alignItems="center"
+                    justify="center"
+                    mt="5px"
+                  >
+                    <Box width="40%" mt="-7px">
+                      <Divider height="16px" />
+                    </Box>
+
+                    <Button
+                      colorScheme="none"
+                      bg="transparent"
+                      color="#E33D3D"
+                      onClick={() => handleDeleteSchedule(schedule.id)}
+                    >
+                      Excluir horário
+                    </Button>
+
+                    <Box width="40%" mt="-7px">
+                      <Divider height="16px" />
+                    </Box>
+                  </Flex>
+                </>
               );
             })}
           </Flex>
