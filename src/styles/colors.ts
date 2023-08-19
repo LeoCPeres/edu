@@ -13,5 +13,7 @@ export const colors = {
   texts: {
     complement: "#9C98A6",
     base: "#6A6180",
+
+    lightBlue: "#A3D8FF",
   },
 };

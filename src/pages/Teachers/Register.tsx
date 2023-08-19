@@ -20,6 +20,7 @@ import { ChangeEvent, useState } from "react";
 import { generateUUID } from "../../utils/generateGUID";
 import { unformatPrice } from "../../utils/unformatCurrency";
 import { formatPrice } from "../../utils/formatCurrency";
+import { AlertDialog } from "../../components/AlertDialog";
 
 type ScheduleType = {
   id: string;
@@ -35,6 +36,11 @@ export function RegisterTeacher() {
   const [price, setPrice] = useState<number>(0);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const {
+    isOpen: isConfirmOpen,
+    onClose: onConfirmClose,
+    onOpen: onConfirmOpen,
+  } = useDisclosure();
   const [scheduleItems, setScheduleItems] = useState<ScheduleType[]>([]);
   const [day, setDay] = useState("");
   const [from, setFrom] = useState("");
@@ -86,6 +92,8 @@ export function RegisterTeacher() {
     }
   };
 
+  function handleRegisterTeacher() {}
+
   return (
     <Flex direction="column">
       <Flex
@@ -96,6 +104,7 @@ export function RegisterTeacher() {
         paddingBottom="128px"
         alignItems="flex-end"
         justifyContent="space-between"
+        mt="64px"
       >
         <Flex direction="column" gap="24px">
           <Heading color="#FFF" fontSize="36px">
@@ -319,6 +328,7 @@ export function RegisterTeacher() {
               color="white"
               colorScheme="none"
               h="56px"
+              onClick={onConfirmOpen}
             >
               Salvar cadastro
             </Button>
@@ -365,6 +375,15 @@ export function RegisterTeacher() {
           </Flex>
         </Flex>
       </Modal>
+
+      <AlertDialog
+        isOpen={isConfirmOpen}
+        onClose={onConfirmClose}
+        confirmAction={handleRegisterTeacher}
+        confirmText="Sim"
+        header="Deseja finalizar o formulário?"
+        title="Deseja finalizar o formulário? Você poderá alterar os dados depois."
+      />
     </Flex>
   );
 }

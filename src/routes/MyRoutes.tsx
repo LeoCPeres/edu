@@ -5,6 +5,7 @@ import { ResetPassword } from "../pages/Auth/ResetPassword";
 import { Home } from "../pages/Home/Home";
 import { Navbar } from "../components/Navbar";
 import { RegisterTeacher } from "../pages/Teachers/Register";
+import { Flex } from "@chakra-ui/react";
 
 export function MyRoutes() {
   return (

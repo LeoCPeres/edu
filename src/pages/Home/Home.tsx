@@ -15,6 +15,7 @@ export function Home() {
         paddingY="88px"
         paddingX="250px"
         bgColor={colors.primary}
+        marginTop="64px"
       >
         <Flex direction="column" gap="16px">
           <Text
