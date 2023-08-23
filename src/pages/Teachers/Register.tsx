@@ -21,6 +21,10 @@ import { generateUUID } from "../../utils/generateGUID";
 import { unformatPrice } from "../../utils/unformatCurrency";
 import { formatPrice } from "../../utils/formatCurrency";
 import { AlertDialog } from "../../components/AlertDialog";
+import { FullSizeModal } from "../../components/FullSizeModal";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 type ScheduleType = {
   id: string;
@@ -40,6 +44,14 @@ export function RegisterTeacher() {
     isOpen: isConfirmOpen,
     onClose: onConfirmClose,
     onOpen: onConfirmOpen,
+  } = useDisclosure();
+
+  const navigate = useNavigate();
+
+  const {
+    isOpen: isSuccessOpen,
+    onClose: onSuccessClose,
+    onOpen: onSuccessOpen,
   } = useDisclosure();
   const [scheduleItems, setScheduleItems] = useState<ScheduleType[]>([]);
   const [day, setDay] = useState("");
@@ -92,7 +104,24 @@ export function RegisterTeacher() {
     }
   };
 
-  function handleRegisterTeacher() {}
+  async function handleRegisterTeacher() {
+    await addDoc(collection(db, "teachers"), {
+      user_id: user?.id,
+      whatsapp: phoneNumber,
+      biography,
+      price,
+      schedule: scheduleItems,
+      createdAt: new Date(),
+    }).then(() => {
+      onSuccessOpen();
+    });
+  }
+
+  function handleSuccessClose() {
+    onConfirmClose();
+    onSuccessClose();
+    navigate("/teachers");
+  }
 
   return (
     <Flex direction="column">
@@ -383,6 +412,15 @@ export function RegisterTeacher() {
         confirmText="Sim"
         header="Deseja finalizar o formulário?"
         title="Deseja finalizar o formulário? Você poderá alterar os dados depois."
+      />
+
+      <FullSizeModal
+        isOpen={isSuccessOpen}
+        onClose={handleSuccessClose}
+        textClose="Acessar lista de professores"
+        title="Cadastro salvo!"
+        subTitle="Tudo certo, seu cadastro está na nossa lista de professores.
+        Agora é só ficar de olho no seu WhatsApp e na plataforma."
       />
     </Flex>
   );
