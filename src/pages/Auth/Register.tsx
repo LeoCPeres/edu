@@ -1,22 +1,36 @@
 import {
-  Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
-  FormHelperText,
-  FormLabel,
   Heading,
   Input,
   Text,
 } from "@chakra-ui/react";
 import { colors } from "../../styles/colors";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function Register() {
+  const { registerUserWithEmailAndPassword } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+
+  async function handleRegisterUser() {
+    const fullName = name + " " + surname;
+
+    await registerUserWithEmailAndPassword(email, password, fullName)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <Flex w="100vw" h="100vh">
@@ -61,7 +75,7 @@ export function Register() {
               borderColor={colors.gray100}
               border={`1px solid ${colors.gray100}`}
               padding="24px"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               fontFamily="Poppins"
             />
           </FormControl>
@@ -75,7 +89,7 @@ export function Register() {
               border={`1px solid ${colors.gray100}`}
               padding="24px"
               borderTop="0px"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setSurname(e.target.value)}
               fontFamily="Poppins"
             />
           </FormControl>
@@ -121,6 +135,7 @@ export function Register() {
               email.length >= 10 && password.length >= 8 ? false : true
             }
             colorScheme="none"
+            onClick={handleRegisterUser}
           >
             Concluir cadastro
           </Button>

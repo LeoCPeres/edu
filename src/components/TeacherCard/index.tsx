@@ -9,6 +9,7 @@ import { UserType } from "../../types/User.interface";
 import { ScheduleDays } from "../../utils/scheduleDays";
 import { ScheduleType } from "../../types/Schedule.interface";
 import { formatPrice } from "../../utils/formatCurrency";
+import { getReadableSubject } from "../../utils/getReadableSubject";
 
 type TeacherCardProps = {
   teacher: TeachersProps;
@@ -108,7 +109,13 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
         borderBottomWidth="0"
       >
         <Flex alignItems="center" gap="24px">
-          <Avatar w="80px" h="80px" src={userData?.avatar} />
+          <Avatar
+            w="80px"
+            h="80px"
+            src={userData?.avatar}
+            name={userData?.name}
+            bg={colors?.primary}
+          />
 
           <Box>
             <Text
@@ -120,7 +127,7 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
               {userData?.name}
             </Text>
             <Text color={colors?.texts.base} fontSize="16px">
-              Química
+              {getReadableSubject(teacher.subject)}
             </Text>
           </Box>
         </Flex>

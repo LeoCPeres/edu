@@ -18,12 +18,22 @@ import { useAuth } from "../../contexts/AuthContext";
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, signInWithEmail } = useAuth();
 
   const navigate = useNavigate();
 
   async function handleGoogleSignIn() {
     await signInWithGoogle()
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  async function handleSignInWithEmailAndPassword() {
+    await signInWithEmail(email, password)
       .then(() => {
         navigate("/");
       })
@@ -147,6 +157,7 @@ export function Login() {
                 email.length >= 10 && password.length >= 8 ? false : true
               }
               colorScheme="none"
+              onClick={handleSignInWithEmailAndPassword}
             >
               Entrar
             </Button>

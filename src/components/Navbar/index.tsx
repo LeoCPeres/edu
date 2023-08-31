@@ -1,4 +1,11 @@
-import { Button, Flex, Image, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Flex,
+  Image,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useAuth } from "../../contexts/AuthContext";
 import { FiPower } from "react-icons/fi";
 import { colors } from "../../styles/colors";
@@ -104,11 +111,12 @@ export function Navbar() {
       maxH="64px"
     >
       <Flex align="center" gap="16px" borderRadius="40px">
-        <Image
+        <Avatar
           boxSize="40px"
           borderRadius="full"
           src={user?.avatar}
-          alt={user?.name}
+          name={user?.name}
+          bg={colors?.primaryDark}
         />
         <Text fontWeight="medium" fontSize="14px" color="#FFF">
           {user?.name}

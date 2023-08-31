@@ -32,6 +32,7 @@ export function RegisterTeacher() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [biography, setBiography] = useState("");
   const [price, setPrice] = useState<number>(0);
+  const [subject, setSubject] = useState("");
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const {
@@ -106,6 +107,7 @@ export function RegisterTeacher() {
       price,
       schedule: scheduleItems,
       createdAt: new Date(),
+      subject,
     }).then(() => {
       onSuccessOpen();
     });
@@ -175,6 +177,7 @@ export function RegisterTeacher() {
                   name={user?.name}
                   src={user?.avatar}
                   w="80px"
+                  bg={colors?.primary}
                   h="80px"
                 />
 
@@ -227,10 +230,23 @@ export function RegisterTeacher() {
               <Box minW="500px">
                 <FormControl mt="32px">
                   <FormLabel>Disciplina</FormLabel>
-                  <Select placeholder="Selecione qual você quer ensinar">
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                  <Select
+                    placeholder="Selecione qual você quer ensinar"
+                    onChange={(e) => setSubject(e.target.value)}
+                  >
+                    <option value="portugues">Língua Portuguesa</option>
+                    <option value="matematica">Matemática</option>
+                    <option value="historia">História</option>
+                    <option value="geografia">Geografia</option>
+                    <option value="ciencias">Ciências</option>
+                    <option value="fisica">Física</option>
+                    <option value="quimica">Química</option>
+                    <option value="biologia">Biologia</option>
+                    <option value="ingles">Língua Inglesa</option>
+                    <option value="artes">Artes</option>
+                    <option value="educacaofisica">Educação Física</option>
+                    <option value="filosofia">Filosofia</option>
+                    <option value="sociologia">Sociologia</option>
                   </Select>
                 </FormControl>
               </Box>
@@ -275,13 +291,13 @@ export function RegisterTeacher() {
                           isDisabled
                           value={schedule.week_day}
                         >
-                          <option value="seg">Segunda-feira</option>
-                          <option value="ter">Terça-feira</option>
-                          <option value="qua">Quarta-feira</option>
-                          <option value="qui">Quinta-feira</option>
-                          <option value="sex">Sexta-feira</option>
-                          <option value="sab">Sábado</option>
-                          <option value="dom">Domingo</option>
+                          <option value="1">Segunda-feira</option>
+                          <option value="2">Terça-feira</option>
+                          <option value="3">Quarta-feira</option>
+                          <option value="4">Quinta-feira</option>
+                          <option value="5">Sexta-feira</option>
+                          <option value="6">Sábado</option>
+                          <option value="7">Domingo</option>
                         </Select>
                       </FormControl>
                     </Box>

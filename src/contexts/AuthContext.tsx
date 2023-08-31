@@ -1,4 +1,11 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -7,8 +14,8 @@ import {
   useContext,
 } from "react";
 import { auth, db, provider } from "../firebase";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { UserType } from "../types/User.interface";
 
 type User = {
   id: string;
@@ -18,8 +25,15 @@ type User = {
 
 type AuthContextType = {
   user: User | undefined;
+  loadUserDataWithEmailAndPassword: (uid: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOutWithGoogle: () => Promise<void>;
+  registerUserWithEmailAndPassword: (
+    email: string,
+    password: string,
+    name: string
+  ) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
 };
 
 type AuthContextProviderProps = {
@@ -102,8 +116,88 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     return isNewUser;
   }
 
+  async function registerUserWithEmailAndPassword(
+    email: string,
+    password: string,
+    name: string
+  ) {
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+
+        const isNewUser = await verifyNewUser(user?.uid);
+
+        if (isNewUser) {
+          // Add user to database
+
+          await setDoc(doc(db, "users", user?.uid), {
+            id: user?.uid,
+            name: name,
+            avatar: user?.photoURL,
+          });
+
+          setUser({
+            id: user?.uid,
+            name: name,
+            avatar: "",
+          });
+        }
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
+  }
+
+  async function signInWithEmail(email: string, password: string) {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+
+        const userData = (
+          await getDoc(doc(db, "users", user.uid))
+        ).data() as UserType;
+
+        setUser({
+          id: user.uid,
+          name: userData.name,
+          avatar: userData.avatar,
+        });
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  }
+
+  async function loadUserDataWithEmailAndPassword(uid: string) {
+    await getDoc(doc(db, "users", uid))
+      .then((response) => {
+        const userData = response.data() as UserType;
+
+        setUser(userData);
+      })
+      .catch((error) => console.log(error));
+  }
+
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, signOutWithGoogle }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        signInWithGoogle,
+        signOutWithGoogle,
+        registerUserWithEmailAndPassword,
+        signInWithEmail,
+        loadUserDataWithEmailAndPassword,
+      }}
+    >
       {props.children}
     </AuthContext.Provider>
   );

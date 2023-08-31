@@ -3,10 +3,11 @@ import { UserType } from "./User.interface";
 
 export type TeachersProps = {
   biography: string;
-  createdAt: Date;
   user_id: string;
   whatsapp: string;
+  subject: string;
   price: number;
+  createdAt: Date;
   schedule: ScheduleType[];
   userData?: UserType;
 };
