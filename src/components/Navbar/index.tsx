@@ -21,6 +21,7 @@ export function Navbar() {
     ({
       "/": true,
       "/teacher/register": true,
+      "/teachers": true,
     }[route] as boolean);
 
   async function handleLogOut() {

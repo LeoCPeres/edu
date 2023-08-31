@@ -6,6 +6,7 @@ import { Home } from "../pages/Home/Home";
 import { Navbar } from "../components/Navbar";
 import { RegisterTeacher } from "../pages/Teachers/Register";
 import { Flex } from "@chakra-ui/react";
+import { Teachers } from "../pages/Teachers";
 
 export function MyRoutes() {
   return (
@@ -19,6 +20,7 @@ export function MyRoutes() {
         <Route path="/resetpassword" element={<ResetPassword />} />
 
         <Route path="/teacher/register" element={<RegisterTeacher />} />
+        <Route path="/teachers" element={<Teachers />} />
 
         <Route path="*" element={<h1>404</h1>} />
       </Routes>

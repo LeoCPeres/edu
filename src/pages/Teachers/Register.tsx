@@ -25,13 +25,7 @@ import { FullSizeModal } from "../../components/FullSizeModal";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
-
-type ScheduleType = {
-  id: string;
-  week_day: string;
-  from: string;
-  to: string;
-};
+import { ScheduleType } from "../../types/Schedule.interface";
 
 export function RegisterTeacher() {
   const { user } = useAuth();
@@ -382,13 +376,13 @@ export function RegisterTeacher() {
                 placeholder="Selecione o dia"
                 onChange={(e) => setDay(e.target.value)}
               >
-                <option value="seg">Segunda-feira</option>
-                <option value="ter">Terça-feira</option>
-                <option value="qua">Quarta-feira</option>
-                <option value="qui">Quinta-feira</option>
-                <option value="sex">Sexta-feira</option>
-                <option value="sab">Sábado</option>
-                <option value="dom">Domingo</option>
+                <option value="1">Segunda-feira</option>
+                <option value="2">Terça-feira</option>
+                <option value="3">Quarta-feira</option>
+                <option value="4">Quinta-feira</option>
+                <option value="5">Sexta-feira</option>
+                <option value="6">Sábado</option>
+                <option value="7">Domingo</option>
               </Select>
             </FormControl>
           </Box>

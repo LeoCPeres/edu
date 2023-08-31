@@ -61,6 +61,7 @@ export function Home() {
               fontFamily="Archivo"
               gap="24px"
               colorScheme="none"
+              onClick={() => navigate("/teachers")}
             >
               <FiBookOpen color="#FFF" />
               Estudar

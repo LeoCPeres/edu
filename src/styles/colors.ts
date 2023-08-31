@@ -14,6 +14,11 @@ export const colors = {
     complement: "#9C98A6",
     base: "#6A6180",
 
+    title: "#0756B1",
+
+    white100: "#FFF",
+    zinc100: "#F4F4F5",
+
     lightBlue: "#A3D8FF",
   },
 };
