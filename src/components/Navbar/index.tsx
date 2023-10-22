@@ -24,12 +24,16 @@ export function Navbar() {
 
   useAuthRedirect();
 
-  const whichStage = (route: string) =>
-    ({
+  function whichStage(route: string) {
+    if (route.includes("/profile/")) return true;
+
+    return {
       "/": true,
       "/teacher/register": true,
       "/teachers": true,
-    }[route] as boolean);
+      "/profile/": true,
+    }[route] as boolean;
+  }
 
   async function handleLogOut() {
     await signOutWithGoogle()

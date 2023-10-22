@@ -1,4 +1,12 @@
-import { Avatar, Box, Button, Flex, Text, Textarea } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Link,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { colors } from "../../styles/colors";
 import { useMemo, useState } from "react";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -10,6 +18,8 @@ import { ScheduleDays } from "../../utils/scheduleDays";
 import { ScheduleType } from "../../types/Schedule.interface";
 import { formatPrice } from "../../utils/formatCurrency";
 import { getReadableSubject } from "../../utils/getReadableSubject";
+import { useNavigate } from "react-router-dom";
+import { generateSchedule } from "../../utils/generateSchedule";
 
 type TeacherCardProps = {
   teacher: TeachersProps;
@@ -21,6 +31,8 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
     {} as ScheduleType,
   ]);
 
+  const navigation = useNavigate();
+
   useMemo(() => {
     async function getUserData() {
       const user = (
@@ -30,71 +42,16 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
       setUserData(user);
     }
 
-    function generateSchedule() {
-      // Função para criar um objeto de programação com as propriedades fornecidas
-      function createScheduleObject({
-        id,
-        week_day,
-        from,
-        to,
-        isDisabled = false,
-      }: ScheduleType) {
-        return { id, week_day, from, to, isDisabled };
-      }
-
-      // Função para criar uma lista de objetos de programação para a semana
-      function createWeeklySchedule(scheduleData: ScheduleType[]) {
-        const daysOfWeek = [
-          "Domingo",
-          "Segunda",
-          "Terça",
-          "Quarta",
-          "Quinta",
-          "Sexta",
-          "Sábado",
-        ];
-        const weeklySchedule = [];
-
-        for (let i = 0; i < 7; i++) {
-          const dayName = daysOfWeek[i];
-          const scheduleInfo = scheduleData.find(
-            (item) => parseInt(item.week_day) === i
-          );
-
-          if (scheduleInfo) {
-            weeklySchedule.push(
-              createScheduleObject({
-                id: scheduleInfo.id,
-                week_day: dayName,
-                from: scheduleInfo.from,
-                to: scheduleInfo.to,
-              })
-            );
-          } else {
-            weeklySchedule.push(
-              createScheduleObject({
-                id: "",
-                week_day: dayName,
-                from: "",
-                to: "",
-                isDisabled: true,
-              })
-            );
-          }
-        }
-
-        return weeklySchedule;
-      }
-
-      return createWeeklySchedule(teacher.schedule);
-    }
-
     getUserData();
 
-    const schedule = generateSchedule();
+    const schedule = generateSchedule(teacher.schedule);
 
     setScheduleData(schedule);
   }, [teacher]);
+
+  function handleGoToProfile() {
+    navigation(`/profile/${teacher.user_id}`);
+  }
 
   return (
     <>
@@ -118,14 +75,15 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
           />
 
           <Box>
-            <Text
+            <Link
               color={colors?.texts.title}
               fontFamily="Archivo"
               fontWeight="bold"
               fontSize="24px"
+              onClick={handleGoToProfile}
             >
               {userData?.name}
-            </Text>
+            </Link>
             <Text color={colors?.texts.base} fontSize="16px">
               {getReadableSubject(teacher.subject)}
             </Text>

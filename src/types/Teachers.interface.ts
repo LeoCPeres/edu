@@ -10,4 +10,5 @@ export type TeachersProps = {
   createdAt: Date;
   schedule: ScheduleType[];
   userData?: UserType;
+  xp: number;
 };

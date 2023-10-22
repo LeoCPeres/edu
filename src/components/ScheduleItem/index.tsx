@@ -20,6 +20,7 @@ export function ScheduleItem({
       p="16px"
       w="100%"
       gap="12px"
+      minW="70px"
       opacity={isDisabled ? 0.5 : 1}
     >
       <Box>
