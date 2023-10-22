@@ -12,25 +12,27 @@ import React from "react";
 import { colors } from "../../styles/colors";
 
 type ModalType = {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+  size: string;
   title?: string;
+  isOpen: boolean;
   textClose?: string;
   hasSaveButton?: boolean;
+  saveButtonText?: string;
+  children: React.ReactNode;
   onSave?: () => void;
-  size: string;
+  onClose: () => void;
 };
 
 export function Modal({
+  size,
+  title,
   isOpen,
+  onSave,
   onClose,
   children,
-  title,
   textClose,
   hasSaveButton,
-  onSave,
-  size,
+  saveButtonText,
 }: ModalType) {
   return (
     <ChakraModal onClose={onClose} isOpen={isOpen} isCentered size={size}>
@@ -48,7 +50,7 @@ export function Modal({
               color="white"
               colorScheme="none"
             >
-              Salvar
+              {saveButtonText ?? "Salvar"}
             </Button>
           )}
         </ModalFooter>

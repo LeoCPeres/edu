@@ -2,14 +2,20 @@ import {
   Avatar,
   Button,
   Flex,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
   Table,
   TableContainer,
+  Tabs,
   Tbody,
   Td,
   Text,
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -24,6 +30,7 @@ import { generateSchedule } from "../../utils/generateSchedule";
 import { ScheduleType } from "../../types/Schedule.interface";
 import { ScheduleList } from "../../components/ScheduleList";
 import { colors } from "../../styles/colors";
+import { Modal } from "../../components/Modal";
 
 type ProfileParams = {
   id: string;
@@ -37,6 +44,12 @@ export function Profile() {
     {} as ScheduleType,
   ]);
 
+  const {
+    isOpen: isRequestOpen,
+    onOpen: onRequestOpen,
+    onClose: onRequestClose,
+  } = useDisclosure();
+
   useMemo(() => {
     async function getUserData() {
       if (!id) {
@@ -46,13 +59,15 @@ export function Profile() {
       const user = (await getDoc(doc(db, "users", id))).data() as UserType;
       const teacher = await getTeacherByUserId(id);
 
-      teacher.userData = user;
+      if (teacher != null) {
+        teacher.userData = user;
 
-      const schedule = generateSchedule(teacher.schedule);
+        const schedule = generateSchedule(teacher.schedule);
+        setTeacherData(teacher);
+        setScheduleData(schedule);
+      }
 
       setUserData(user);
-      setTeacherData(teacher);
-      setScheduleData(schedule);
     }
 
     getUserData();
@@ -60,8 +75,8 @@ export function Profile() {
 
   return (
     <Flex direction="column">
-      <Flex mt="128px" paddingX="250px">
-        <Flex direction="column" maxW="30%">
+      <Flex mt="128px" paddingX="250px" w="100%" gap="32px">
+        <Flex direction="column" w="25%">
           <Flex alignItems="center">
             <Avatar src={userData?.avatar} width="72px" h="72px" />
 
@@ -104,17 +119,17 @@ export function Profile() {
                   color="#FFF"
                   fontFamily="Archivo"
                   fontWeight="semibold"
-                  gap="16px"
+                  gap="8px"
                   w="100%"
                 >
-                  <img src="/images/icons/Whatsapp.svg" alt="" /> Entrar em
-                  contato
+                  <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp
                 </Button>
                 <Button
                   w="100%"
                   bg={colors?.primary}
                   color="white"
                   colorScheme="none"
+                  onClick={onRequestOpen}
                 >
                   Solicitar horário
                 </Button>
@@ -122,7 +137,43 @@ export function Profile() {
             </>
           )}
         </Flex>
+
+        {teacherData && (
+          <Flex w="100%">
+            <Tabs align="start" w="100%">
+              <Flex w="100%" alignItems="center" justifyContent="flex-start">
+                <TabList>
+                  <Tab>Horários</Tab>
+                  <Tab>Posts</Tab>
+                  <Tab>Conquistas</Tab>
+                  <Tab>Avaliações</Tab>
+                </TabList>
+              </Flex>
+
+              <TabPanels>
+                <TabPanel>
+                  <ScheduleList schedule={scheduleData} />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Flex>
+        )}
       </Flex>
+
+      <Modal
+        isOpen={isRequestOpen}
+        onClose={onRequestClose}
+        size="lg"
+        title="Solicitar um horário"
+        textClose="Cancelar"
+        hasSaveButton
+        saveButtonText="Solicitar"
+        onSave={() => {
+          onRequestClose();
+        }}
+      >
+        <Text>oi</Text>
+      </Modal>
     </Flex>
   );
 }
