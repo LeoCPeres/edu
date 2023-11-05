@@ -108,6 +108,7 @@ export function RegisterTeacher() {
       schedule: scheduleItems,
       createdAt: new Date(),
       subject,
+      xp: 0,
     }).then(() => {
       onSuccessOpen();
     });

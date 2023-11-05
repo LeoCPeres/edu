@@ -42,6 +42,7 @@ import { Modal } from "../../components/Modal";
 import { generateUUID } from "../../utils/generateGUID";
 import { useAuth } from "../../contexts/AuthContext";
 import { FiFlag } from "react-icons/fi";
+import ExperienceBar from "../../components/ExperienceBar";
 
 type ProfileParams = {
   id: string;
@@ -144,9 +145,12 @@ export function Profile() {
   }, []);
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" paddingX="250px" w="100%">
       <Toast />
-      <Flex mt="128px" paddingX="250px" w="100%" gap="32px">
+
+      {isMe && teacherData && <ExperienceBar currentXP={teacherData.xp ?? 0} />}
+
+      <Flex mt="64px" gap="32px">
         <Flex direction="column" w="35%">
           <Flex alignItems="center">
             <Avatar src={userData?.avatar} width="72px" h="72px" />
