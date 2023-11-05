@@ -20,6 +20,7 @@ import { formatPrice } from "../../utils/formatCurrency";
 import { getReadableSubject } from "../../utils/getReadableSubject";
 import { useNavigate } from "react-router-dom";
 import { generateSchedule } from "../../utils/generateSchedule";
+import { FiArrowRight } from "react-icons/fi";
 
 type TeacherCardProps = {
   teacher: TeachersProps;
@@ -131,13 +132,14 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
           colorScheme="none"
           paddingX="43px"
           paddingY="15px"
-          bg={colors?.green}
+          bg={colors?.primary}
           color="#FFF"
           fontFamily="Archivo"
           fontWeight="semibold"
           gap="16px"
+          onClick={handleGoToProfile}
         >
-          <img src="/images/icons/Whatsapp.svg" alt="" /> Entrar em contato
+          Conhecer professor <FiArrowRight />
         </Button>
       </Flex>
     </>

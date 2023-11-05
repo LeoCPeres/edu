@@ -7,7 +7,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useAuth } from "../../contexts/AuthContext";
-import { FiPower } from "react-icons/fi";
+import { FiBell, FiPower } from "react-icons/fi";
 import { colors } from "../../styles/colors";
 import { useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -75,19 +75,38 @@ export function Navbar() {
           {whichRoute(location.pathname)}
         </Text>
 
-        <Button
-          borderRadius="8px"
-          padding="0px"
-          bg={colors.primary}
-          colorScheme="none"
-          style={{
-            filter:
-              location.pathname == "/" ? `brightness(0.9)` : `brightness(0.8)`,
-          }}
-          onClick={() => onOpen()}
-        >
-          <FiPower />
-        </Button>
+        <Flex gap="8px">
+          <Button
+            borderRadius="8px"
+            padding="0px"
+            bg={colors.primary}
+            colorScheme="none"
+            style={{
+              filter:
+                location.pathname == "/"
+                  ? `brightness(0.9)`
+                  : `brightness(0.8)`,
+            }}
+            onClick={() => onOpen()}
+          >
+            <FiPower />
+          </Button>
+          <Button
+            borderRadius="8px"
+            padding="0px"
+            bg={colors.primary}
+            colorScheme="none"
+            style={{
+              filter:
+                location.pathname == "/"
+                  ? `brightness(0.9)`
+                  : `brightness(0.8)`,
+            }}
+            onClick={() => onOpen()}
+          >
+            <FiBell />
+          </Button>
+        </Flex>
 
         <AlertDialog
           isOpen={isOpen}

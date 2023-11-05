@@ -1,7 +1,12 @@
 import {
   Avatar,
+  Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -12,15 +17,18 @@ import {
   Tbody,
   Td,
   Text,
+  Textarea,
   Th,
   Thead,
+  Toast,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserType } from "../../types/User.interface";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { TeachersProps } from "../../types/Teachers.interface";
 import { getTeacherByUserId } from "../../services/teacherServices";
@@ -31,12 +39,16 @@ import { ScheduleType } from "../../types/Schedule.interface";
 import { ScheduleList } from "../../components/ScheduleList";
 import { colors } from "../../styles/colors";
 import { Modal } from "../../components/Modal";
+import { generateUUID } from "../../utils/generateGUID";
+import { useAuth } from "../../contexts/AuthContext";
+import { FiFlag } from "react-icons/fi";
 
 type ProfileParams = {
   id: string;
 };
 
 export function Profile() {
+  const { user } = useAuth();
   const { id } = useParams<ProfileParams>();
   const [userData, setUserData] = useState<UserType>();
   const [teacherData, setTeacherData] = useState<TeachersProps>();
@@ -44,11 +56,66 @@ export function Profile() {
     {} as ScheduleType,
   ]);
 
+  const [requestClassIsLoading, setRequestClassIsLoading] = useState(false);
+  const [requestClassText, setRequestClassText] = useState("");
+  const [requestClassFrom, setRequestClassFrom] = useState("");
+  const [requestClassDay, setRequestClassDay] = useState("");
+  const [requestClassTo, setRequestClassTo] = useState("");
+
+  const isMe = id === user?.id;
+
   const {
     isOpen: isRequestOpen,
     onOpen: onRequestOpen,
     onClose: onRequestClose,
   } = useDisclosure();
+
+  const toast = useToast();
+
+  async function handleRequestClass() {
+    if (!isRequestOpen) {
+      return;
+    }
+
+    if (
+      requestClassText != "" &&
+      requestClassFrom != "" &&
+      requestClassTo != "" &&
+      requestClassDay != ""
+    ) {
+      setRequestClassIsLoading(true);
+
+      try {
+        const requestClassData = {
+          from: requestClassFrom,
+          to: requestClassTo,
+          day: requestClassDay,
+          text: requestClassText,
+          teacherId: teacherData?.user_id,
+          studentId: user?.id,
+          createDate: new Date(),
+        };
+
+        await setDoc(
+          doc(db, "classRequests", generateUUID()),
+          requestClassData
+        );
+        setRequestClassIsLoading(false);
+        onRequestClose();
+        toast({
+          title: "Horário solicitado com sucesso!",
+          description: "Aguarde a confirmação do professor.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } catch (error) {
+        console.log(error);
+        setRequestClassIsLoading(false);
+      }
+    }
+  }
 
   useMemo(() => {
     async function getUserData() {
@@ -65,6 +132,9 @@ export function Profile() {
         const schedule = generateSchedule(teacher.schedule);
         setTeacherData(teacher);
         setScheduleData(schedule);
+        setRequestClassText(
+          `Olá, ${teacher?.userData?.name}. Gostaria de solicitar um horário para uma de suas aulas.`
+        );
       }
 
       setUserData(user);
@@ -75,8 +145,9 @@ export function Profile() {
 
   return (
     <Flex direction="column">
+      <Toast />
       <Flex mt="128px" paddingX="250px" w="100%" gap="32px">
-        <Flex direction="column" w="25%">
+        <Flex direction="column" w="35%">
           <Flex alignItems="center">
             <Avatar src={userData?.avatar} width="72px" h="72px" />
 
@@ -136,6 +207,14 @@ export function Profile() {
               </Flex>
             </>
           )}
+          {isMe && <Button mt="8px">Editar perfil</Button>}
+
+          {!isMe && (
+            <Button mt="8px" bg="#E33D3D" color="white" gap="8px">
+              Reportar professor
+              <FiFlag />
+            </Button>
+          )}
         </Flex>
 
         {teacherData && (
@@ -168,11 +247,49 @@ export function Profile() {
         textClose="Cancelar"
         hasSaveButton
         saveButtonText="Solicitar"
-        onSave={() => {
-          onRequestClose();
-        }}
+        onSave={handleRequestClass}
+        isLoadingSave={requestClassIsLoading}
       >
-        <Text>oi</Text>
+        <Textarea
+          onChange={(e) => setRequestClassText(e.target.value)}
+          value={requestClassText}
+        />
+
+        <Flex justify="space-between" gap="8px">
+          <Box minW="45%">
+            <FormControl mt="16px">
+              <FormLabel>Dia da semana</FormLabel>
+              <Select
+                placeholder="Selecione o dia"
+                onChange={(e) => setRequestClassDay(e.target.value)}
+              >
+                <option value="1">Segunda-feira</option>
+                <option value="2">Terça-feira</option>
+                <option value="3">Quarta-feira</option>
+                <option value="4">Quinta-feira</option>
+                <option value="5">Sexta-feira</option>
+                <option value="6">Sábado</option>
+                <option value="7">Domingo</option>
+              </Select>
+            </FormControl>
+          </Box>
+          <Flex gap="8px">
+            <FormControl mt="16px">
+              <FormLabel>Das</FormLabel>
+              <Input
+                type="time"
+                onChange={(e) => setRequestClassFrom(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mt="16px">
+              <FormLabel>Até</FormLabel>
+              <Input
+                type="time"
+                onChange={(e) => setRequestClassTo(e.target.value)}
+              />
+            </FormControl>
+          </Flex>
+        </Flex>
       </Modal>
     </Flex>
   );

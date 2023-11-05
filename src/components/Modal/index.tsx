@@ -17,6 +17,7 @@ type ModalType = {
   isOpen: boolean;
   textClose?: string;
   hasSaveButton?: boolean;
+  isLoadingSave?: boolean;
   saveButtonText?: string;
   children: React.ReactNode;
   onSave?: () => void;
@@ -31,6 +32,7 @@ export function Modal({
   onClose,
   children,
   textClose,
+  isLoadingSave,
   hasSaveButton,
   saveButtonText,
 }: ModalType) {
@@ -49,6 +51,7 @@ export function Modal({
               bg={colors.primary}
               color="white"
               colorScheme="none"
+              isLoading={isLoadingSave}
             >
               {saveButtonText ?? "Salvar"}
             </Button>

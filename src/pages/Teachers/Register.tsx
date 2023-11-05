@@ -227,7 +227,7 @@ export function RegisterTeacher() {
             <Divider height="16px" />
 
             <Flex justify="space-between" gap="33px">
-              <Box minW="500px">
+              <Box w="50%">
                 <FormControl mt="32px">
                   <FormLabel>Disciplina</FormLabel>
                   <Select
@@ -250,7 +250,7 @@ export function RegisterTeacher() {
                   </Select>
                 </FormControl>
               </Box>
-              <FormControl mt="32px">
+              <FormControl mt="32px" w="50%">
                 <FormLabel>Custo da sua hora por aula</FormLabel>
                 <Input
                   type="text"
