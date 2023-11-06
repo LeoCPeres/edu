@@ -26,7 +26,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useRoutes } from "react-router-dom";
 import { UserType } from "../../types/User.interface";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -51,6 +51,7 @@ type ProfileParams = {
 export function Profile() {
   const { user } = useAuth();
   const { id } = useParams<ProfileParams>();
+  const navigation = useNavigate();
   const [userData, setUserData] = useState<UserType>();
   const [teacherData, setTeacherData] = useState<TeachersProps>();
   const [scheduleData, setScheduleData] = useState<ScheduleType[]>([
@@ -115,6 +116,12 @@ export function Profile() {
         console.log(error);
         setRequestClassIsLoading(false);
       }
+    }
+  }
+
+  function handleEdit() {
+    if (teacherData) {
+      navigation(`/teachers/edit`, { state: { teacher: teacherData } });
     }
   }
 
@@ -187,31 +194,37 @@ export function Profile() {
                 R$ {teacherData?.price}
               </Text>
 
-              <Flex gap="6px" mt="4">
-                <Button
-                  colorScheme="none"
-                  bg={colors?.green}
-                  color="#FFF"
-                  fontFamily="Archivo"
-                  fontWeight="semibold"
-                  gap="8px"
-                  w="100%"
-                >
-                  <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp
-                </Button>
-                <Button
-                  w="100%"
-                  bg={colors?.primary}
-                  color="white"
-                  colorScheme="none"
-                  onClick={onRequestOpen}
-                >
-                  Solicitar horário
-                </Button>
-              </Flex>
+              {!isMe && (
+                <Flex gap="6px" mt="4">
+                  <Button
+                    colorScheme="none"
+                    bg={colors?.green}
+                    color="#FFF"
+                    fontFamily="Archivo"
+                    fontWeight="semibold"
+                    gap="8px"
+                    w="100%"
+                  >
+                    <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp
+                  </Button>
+                  <Button
+                    w="100%"
+                    bg={colors?.primary}
+                    color="white"
+                    colorScheme="none"
+                    onClick={onRequestOpen}
+                  >
+                    Solicitar horário
+                  </Button>
+                </Flex>
+              )}
             </>
           )}
-          {isMe && <Button mt="8px">Editar perfil</Button>}
+          {isMe && (
+            <Button mt="8px" onClick={handleEdit}>
+              Editar perfil
+            </Button>
+          )}
 
           {!isMe && (
             <Button mt="8px" bg="#E33D3D" color="white" gap="8px">

@@ -26,6 +26,7 @@ export function Navbar() {
 
   function whichStage(route: string) {
     if (route.includes("/profile/")) return true;
+    if (route.includes("/teachers/edit")) return true;
 
     return {
       "/": true,
