@@ -7,6 +7,7 @@ import {
   FormLabel,
   Input,
   Select,
+  Spinner,
   Tab,
   TabList,
   TabPanel,
@@ -28,7 +29,16 @@ import {
 import { useMemo, useState } from "react";
 import { useNavigate, useParams, useRoutes } from "react-router-dom";
 import { UserType } from "../../types/User.interface";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { TeachersProps } from "../../types/Teachers.interface";
 import { getTeacherByUserId } from "../../services/teacherServices";
@@ -43,6 +53,8 @@ import { generateUUID } from "../../utils/generateGUID";
 import { useAuth } from "../../contexts/AuthContext";
 import { FiFlag } from "react-icons/fi";
 import ExperienceBar from "../../components/ExperienceBar";
+import { Post } from "../../components/Post";
+import { PostType } from "../../types/post.interface";
 
 type ProfileParams = {
   id: string;
@@ -63,6 +75,11 @@ export function Profile() {
   const [requestClassFrom, setRequestClassFrom] = useState("");
   const [requestClassDay, setRequestClassDay] = useState("");
   const [requestClassTo, setRequestClassTo] = useState("");
+
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [postText, setPostText] = useState("");
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   const isMe = id === user?.id;
 
@@ -151,6 +168,59 @@ export function Profile() {
     getUserData();
   }, []);
 
+  async function handleFetchPosts() {
+    setIsLoadingPosts(true);
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, where("authorId", "==", id));
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const postsData = querySnapshot.docs.map((doc) => {
+        console.log(doc.data());
+        return {
+          id: doc.id,
+          ...doc.data(),
+        } as PostType;
+      });
+
+      setPosts(postsData);
+    }
+
+    setIsLoadingPosts(false);
+  }
+
+  async function handleDeletePost(postId: string) {
+    await deleteDoc(doc(db, "posts", postId));
+    setPosts(posts.filter((post) => post.id !== postId));
+  }
+
+  async function handleCreatePost() {
+    setIsCreatingPost(true);
+    const postId = generateUUID();
+    const postData = {
+      id: postId,
+      content: {
+        text: postText,
+      },
+      authorId: user?.id,
+      createdAt: new Date(),
+      likes: 0,
+      usersWhoLiked: [""],
+    } as PostType;
+
+    await setDoc(doc(db, "posts", postId), postData);
+    setIsCreatingPost(false);
+
+    postData.createdAt = {
+      seconds: new Date().getTime(),
+    };
+    console.log(postData.createdAt);
+
+    setPosts([postData, ...posts]);
+    setPostText("");
+  }
+
   return (
     <Flex direction="column" paddingX="250px" w="100%">
       <Toast />
@@ -227,7 +297,13 @@ export function Profile() {
           )}
 
           {!isMe && (
-            <Button mt="8px" bg="#E33D3D" color="white" gap="8px">
+            <Button
+              mt="8px"
+              bg="#E33D3D"
+              color="white"
+              gap="8px"
+              colorScheme="none"
+            >
               Reportar professor
               <FiFlag />
             </Button>
@@ -240,7 +316,7 @@ export function Profile() {
               <Flex w="100%" alignItems="center" justifyContent="flex-start">
                 <TabList>
                   <Tab>Horários</Tab>
-                  <Tab>Posts</Tab>
+                  <Tab onClick={handleFetchPosts}>Posts</Tab>
                   <Tab>Conquistas</Tab>
                   <Tab>Avaliações</Tab>
                 </TabList>
@@ -249,6 +325,58 @@ export function Profile() {
               <TabPanels>
                 <TabPanel>
                   <ScheduleList schedule={scheduleData} />
+                </TabPanel>
+                <TabPanel>
+                  {isMe && (
+                    <Flex flexDirection="column">
+                      <Textarea
+                        placeholder="Escreva algo para os seus alunos..."
+                        borderColor={colors?.texts.zinc100}
+                        borderWidth={1}
+                        borderRadius="8px"
+                        value={postText}
+                        onChange={(e) => setPostText(e.target.value)}
+                      />
+                      <Button
+                        alignSelf="flex-end"
+                        mt="16px"
+                        bg={colors?.primary}
+                        colorScheme="none"
+                        isDisabled={postText == ""}
+                        onClick={handleCreatePost}
+                        isLoading={isCreatingPost}
+                      >
+                        Publicar
+                      </Button>
+                    </Flex>
+                  )}
+                  {isLoadingPosts && posts.length == 0 ? (
+                    <Flex w="100%" alignItems="center" justifyContent="center">
+                      <Spinner />
+                    </Flex>
+                  ) : !isLoadingPosts && posts.length == 0 ? (
+                    <Flex
+                      w="100%"
+                      alignItems="center"
+                      justifyContent="center"
+                      mt="16px"
+                      flexDirection="column"
+                      gap="8px"
+                    >
+                      <Text>Nenhum post encontrado</Text>
+                    </Flex>
+                  ) : (
+                    <Flex flexDirection="column" mt="16px">
+                      {posts?.map((post) => (
+                        <Post
+                          post={post}
+                          deletePost={(postId: string) =>
+                            handleDeletePost(postId)
+                          }
+                        />
+                      ))}
+                    </Flex>
+                  )}
                 </TabPanel>
               </TabPanels>
             </Tabs>
