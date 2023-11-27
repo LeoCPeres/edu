@@ -3,6 +3,15 @@ import {
   Button,
   Flex,
   Image,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -14,6 +23,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { whichRoute } from "../../routes/whichRoute";
 import { AlertDialog } from "../AlertDialog";
+import { Notifications } from "../Notifications";
 
 export function Navbar() {
   const { user, signOutWithGoogle } = useAuth();
@@ -92,21 +102,7 @@ export function Navbar() {
           >
             <FiPower />
           </Button>
-          <Button
-            borderRadius="8px"
-            padding="0px"
-            bg={colors.primary}
-            colorScheme="none"
-            style={{
-              filter:
-                location.pathname == "/"
-                  ? `brightness(0.9)`
-                  : `brightness(0.8)`,
-            }}
-            onClick={() => onOpen()}
-          >
-            <FiBell />
-          </Button>
+          <Notifications />
         </Flex>
 
         <AlertDialog
@@ -147,19 +143,22 @@ export function Navbar() {
         </Text>
       </Flex>
 
-      <Button
-        borderRadius="8px"
-        padding="0px"
-        bg={colors.primary}
-        colorScheme="none"
-        style={{
-          filter:
-            location.pathname == "/" ? `brightness(0.9)` : `brightness(0.8)`,
-        }}
-        onClick={() => onOpen()}
-      >
-        <FiPower />
-      </Button>
+      <Flex gap="8px">
+        <Button
+          borderRadius="8px"
+          padding="0px"
+          bg={colors.primary}
+          colorScheme="none"
+          style={{
+            filter:
+              location.pathname == "/" ? `brightness(0.9)` : `brightness(0.8)`,
+          }}
+          onClick={() => onOpen()}
+        >
+          <FiPower />
+        </Button>
+        <Notifications />
+      </Flex>
 
       <AlertDialog
         isOpen={isOpen}

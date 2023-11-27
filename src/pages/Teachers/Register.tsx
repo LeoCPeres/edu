@@ -109,7 +109,16 @@ export function RegisterTeacher() {
       createdAt: new Date(),
       subject,
       xp: 0,
-    }).then(() => {
+    }).then(async (res) => {
+      if (user) {
+        await setDoc(doc(db, "users", user?.id), {
+          id: user?.id,
+          name: user?.name,
+          avatar: user?.avatar,
+          teacherId: res.id,
+        });
+      }
+
       onSuccessOpen();
     });
   }

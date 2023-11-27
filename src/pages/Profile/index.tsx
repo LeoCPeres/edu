@@ -113,6 +113,7 @@ export function Profile() {
           teacherId: teacherData?.user_id,
           studentId: user?.id,
           createDate: new Date(),
+          status: "pending",
         };
 
         await setDoc(

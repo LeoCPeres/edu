@@ -17,14 +17,8 @@ import { auth, db, provider } from "../firebase";
 import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { UserType } from "../types/User.interface";
 
-type User = {
-  id: string;
-  name: string;
-  avatar: string;
-};
-
 type AuthContextType = {
-  user: User | undefined;
+  user: UserType | undefined;
   loadUserDataWithEmailAndPassword: (uid: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOutWithGoogle: () => Promise<void>;
@@ -43,7 +37,7 @@ type AuthContextProviderProps = {
 export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthContextProvider(props: AuthContextProviderProps) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<UserType>();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -54,11 +48,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
           throw new Error("Missing information from Google Account");
         }
 
-        setUser({
-          id: uid,
-          name: displayName,
-          avatar: photoURL,
-        });
+        loadUserDataWithEmailAndPassword(uid);
       }
     });
     return () => {
