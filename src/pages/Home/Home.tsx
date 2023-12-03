@@ -2,9 +2,27 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react";
 import { colors } from "../../styles/colors";
 import { FiBookOpen, FiTv } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function Home() {
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [totalConnections, setTotalConnections] = useState(0);
+
+  useEffect(() => {
+    async function getTotalConnections() {
+      await getDocs(collection(db, "connections")).then((res) => {
+        if (!res.empty) {
+          setTotalConnections(res.docs.length);
+        }
+      });
+    }
+
+    getTotalConnections();
+  }, []);
 
   return (
     <Flex w="100%" direction="column">
@@ -47,7 +65,7 @@ export function Home() {
 
         <Flex alignItems="center" gap="53px">
           <Text textAlign="right">
-            Total de 285 conexões <br /> já realizadas ❤️
+            Total de {totalConnections} conexões <br /> já realizadas ❤️
           </Text>
 
           <Flex gap="16px">
@@ -66,21 +84,39 @@ export function Home() {
               <FiBookOpen color="#FFF" />
               Estudar
             </Button>
-            <Button
-              bg={colors.green}
-              color="#FFF"
-              w="301px"
-              h="104px"
-              borderRadius="8px"
-              fontSize="24px"
-              fontFamily="Archivo"
-              gap="24px"
-              colorScheme="none"
-              onClick={() => navigate("/teacher/register")}
-            >
-              <FiTv color="#FFF" />
-              Dar aulas
-            </Button>
+            {user?.teacherId ? (
+              <Button
+                bg={colors.green}
+                color="#FFF"
+                w="301px"
+                h="104px"
+                borderRadius="8px"
+                fontSize="24px"
+                fontFamily="Archivo"
+                gap="24px"
+                colorScheme="none"
+                onClick={() => navigate("/teacher/classes")}
+              >
+                <FiTv color="#FFF" />
+                Dar aulas
+              </Button>
+            ) : (
+              <Button
+                bg={colors.green}
+                color="#FFF"
+                w="301px"
+                h="104px"
+                borderRadius="8px"
+                fontSize="24px"
+                fontFamily="Archivo"
+                gap="24px"
+                colorScheme="none"
+                onClick={() => navigate("/teacher/register")}
+              >
+                <FiTv color="#FFF" />
+                Dar aulas
+              </Button>
+            )}
           </Flex>
         </Flex>
       </Flex>

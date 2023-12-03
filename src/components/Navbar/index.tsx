@@ -42,6 +42,7 @@ export function Navbar() {
     return {
       "/": true,
       "/teacher/register": true,
+      "/teacher/classes": true,
       "/teachers": true,
       "/profile/": true,
     }[route] as boolean;

@@ -33,6 +33,7 @@ import {
   doc,
   onSnapshot,
   query,
+  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -45,6 +46,7 @@ import { UserType } from "../../types/User.interface";
 import { getTimeDifference } from "../../utils/getTimeDifference";
 import { ScheduleDays } from "../../utils/scheduleDays";
 import { TeachersProps } from "../../types/Teachers.interface";
+import { generateUUID } from "../../utils/generateGUID";
 
 type NotificationsProps = {
   user?: UserType;
@@ -219,8 +221,47 @@ export function Notifications({ user }: NotificationsProps) {
         isClosable: true,
       });
 
+      await setDoc(doc(db, "connections", generateUUID()), {
+        createdAt: new Date(),
+        studentId: studentData?.id,
+        teacherId: user?.id,
+        schedule: {
+          day: requests.find((x) => x.id === requestId)?.day,
+          from: requests.find((x) => x.id === requestId)?.from,
+          to: requests.find((x) => x.id === requestId)?.to,
+        },
+        isCompleted: false,
+      });
+
       onClose();
     }
+  }
+
+  async function handleCreateConnection() {
+    if (requestId) {
+      await setDoc(doc(db, "connections", generateUUID()), {
+        createdAt: new Date(),
+        studentId: user?.id,
+        teacherId: teacherData?.id,
+        schedule: {
+          day: requests.find((x) => x.id === requestId)?.recuseReasonData
+            ?.suggestClassDay,
+          from: requests.find((x) => x.id === requestId)?.recuseReasonData
+            ?.suggestClassFrom,
+          to: requests.find((x) => x.id === requestId)?.recuseReasonData
+            ?.suggestClassTo,
+        },
+        isCompleted: false,
+      });
+
+      const docRef = doc(db, "classRequests", requestId);
+
+      await updateDoc(docRef, {
+        status: "accepted",
+      });
+    }
+
+    onRefusedClose();
   }
 
   return (
@@ -244,19 +285,21 @@ export function Notifications({ user }: NotificationsProps) {
               ? requests.filter(
                   (x) => x.status === "accepted" || x.status == "refused"
                 ).length > 0 && (
-                  <span
-                    style={{
-                      backgroundColor: "red",
-                      borderRadius: "50%",
-                      width: "8px",
-                      height: "8px",
-                      display: "inline-block",
-                      position: "absolute",
+                  <>
+                    <span
+                      style={{
+                        backgroundColor: "red",
+                        borderRadius: "50%",
+                        width: "8px",
+                        height: "8px",
+                        display: "inline-block",
+                        position: "absolute",
 
-                      marginLeft: "12px",
-                      marginTop: "12px",
-                    }}
-                  ></span>
+                        marginLeft: "12px",
+                        marginTop: "12px",
+                      }}
+                    ></span>
+                  </>
                 )
               : requests.filter((x) => x.status === "pending").length > 0 && (
                   <span
@@ -387,11 +430,9 @@ export function Notifications({ user }: NotificationsProps) {
 
             <Text mt="8px">Minha preferência de dia e horário é:</Text>
             <Text mt="8px" fontWeight="semibold">
-              {
-                ScheduleDays.find(
-                  (x) => x.id === requests.find((x) => x.id === requestId)?.day
-                )?.week_day
-              }{" "}
+              {new Date(
+                requests.find((x) => x.id === requestId)?.day ?? ""
+              ).toLocaleDateString()}{" "}
               das {requests.find((x) => x.id === requestId)?.from} às{" "}
               {requests.find((x) => x.id === requestId)?.to}
             </Text>
@@ -455,18 +496,10 @@ export function Notifications({ user }: NotificationsProps) {
                   <Box minW="45%">
                     <FormControl mt="8px">
                       <FormLabel>Dia da semana</FormLabel>
-                      <Select
-                        placeholder="Selecione o dia"
+                      <Input
+                        type="date"
                         onChange={(e) => setSuggestClassDay(e.target.value)}
-                      >
-                        <option value="1">Segunda-feira</option>
-                        <option value="2">Terça-feira</option>
-                        <option value="3">Quarta-feira</option>
-                        <option value="4">Quinta-feira</option>
-                        <option value="5">Sexta-feira</option>
-                        <option value="6">Sábado</option>
-                        <option value="7">Domingo</option>
-                      </Select>
+                      />
                     </FormControl>
                   </Box>
                   <Flex gap="8px">
@@ -529,17 +562,13 @@ export function Notifications({ user }: NotificationsProps) {
               ?.reason == 1 && (
               <>
                 <Text mt="16px" fontWeight="semibold">
-                  Horário sugerido pelo professor
+                  Horário sugerido pelo professor:
                 </Text>
                 <Text mt="8px">
-                  {
-                    ScheduleDays.find(
-                      (x) =>
-                        x.id ===
-                        requests.find((x) => x.id === requestId)
-                          ?.recuseReasonData?.suggestClassDay
-                    )?.week_day
-                  }{" "}
+                  {new Date(
+                    requests.find((x) => x.id === requestId)?.recuseReasonData
+                      ?.suggestClassDay ?? ""
+                  ).toLocaleDateString()}{" "}
                   das{" "}
                   {
                     requests.find((x) => x.id === requestId)?.recuseReasonData
@@ -554,37 +583,47 @@ export function Notifications({ user }: NotificationsProps) {
               </>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter display="flex" flexDirection="column" gap="8px">
             {requests.find((x) => x.id === requestId)?.recuseReasonData
               ?.reason == 1 && (
               <Button
                 colorScheme="none"
-                bg={colors?.green}
+                bg={colors?.primary}
                 color="#FFF"
                 fontFamily="Archivo"
                 fontWeight="semibold"
                 gap="8px"
                 w="100%"
-                onClick={() => {
-                  window.open(
-                    `https://wa.me/${teacherData?.phoneNumber}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                }}
+                onClick={handleCreateConnection}
+                isDisabled={
+                  requests.find((x) => x.id === requestId)?.status ===
+                    "accepted" &&
+                  requests.find((x) => x.id === requestId)?.recuseReasonData !=
+                    undefined
+                }
               >
-                <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp do
-                professor
+                Aceitar horário sugerido
               </Button>
             )}
-            {/* <Button
+            <Button
               colorScheme="none"
-              onClick={handleRecuseRequest}
-              bg={"#E33D3D"}
+              bg={colors?.green}
+              color="#FFF"
+              fontFamily="Archivo"
+              fontWeight="semibold"
+              gap="8px"
               w="100%"
+              onClick={() => {
+                window.open(
+                  `https://wa.me/${teacherData?.phoneNumber}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }}
             >
-              Reprovar
-            </Button> */}
+              <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp do
+              professor
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -606,11 +645,9 @@ export function Notifications({ user }: NotificationsProps) {
             </Text>
             <Text mt="8px" fontWeight="semibold">
               Horário:{" "}
-              {
-                ScheduleDays.find(
-                  (x) => x.id === requests.find((x) => x.id === requestId)?.day
-                )?.week_day
-              }{" "}
+              {new Date(
+                requests.find((x) => x.id === requestId)?.day ?? ""
+              ).toLocaleDateString()}{" "}
               das {requests.find((x) => x.id === requestId)?.from} às{" "}
               {requests.find((x) => x.id === requestId)?.to}
             </Text>

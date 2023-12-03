@@ -463,8 +463,12 @@ export function Profile() {
         <Flex justify="space-between" gap="8px">
           <Box minW="45%">
             <FormControl mt="16px">
-              <FormLabel>Dia da semana</FormLabel>
-              <Select
+              <FormLabel>Dia</FormLabel>
+              <Input
+                type="date"
+                onChange={(e) => setRequestClassDay(e.target.value)}
+              />
+              {/* <Select
                 placeholder="Selecione o dia"
                 onChange={(e) => setRequestClassDay(e.target.value)}
               >
@@ -475,7 +479,7 @@ export function Profile() {
                 <option value="5">Sexta-feira</option>
                 <option value="6">Sábado</option>
                 <option value="7">Domingo</option>
-              </Select>
+              </Select> */}
             </FormControl>
           </Box>
           <Flex gap="8px">

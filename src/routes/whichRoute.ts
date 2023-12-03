@@ -4,6 +4,7 @@ export function whichRoute(route: string) {
 
   return {
     "/teacher/register": "Dar aulas",
+    "/teacher/classes": "Dar aulas",
     "/teachers": "Estudar",
   }[route] as string;
 }
