@@ -27,12 +27,12 @@ export function generateSchedule(teacherSechedule: ScheduleType[]) {
 
     for (let i = 0; i < 7; i++) {
       const dayName = daysOfWeek[i];
-      const scheduleInfo = scheduleData.find(
+      const scheduleInfo = scheduleData?.find(
         (item) => parseInt(item.week_day) === i
       );
 
       if (scheduleInfo) {
-        weeklySchedule.push(
+        weeklySchedule?.push(
           createScheduleObject({
             id: scheduleInfo.id,
             week_day: dayName,
@@ -41,7 +41,7 @@ export function generateSchedule(teacherSechedule: ScheduleType[]) {
           })
         );
       } else {
-        weeklySchedule.push(
+        weeklySchedule?.push(
           createScheduleObject({
             id: "",
             week_day: dayName,

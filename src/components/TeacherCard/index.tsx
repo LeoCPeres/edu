@@ -21,6 +21,7 @@ import { getReadableSubject } from "../../utils/getReadableSubject";
 import { useNavigate } from "react-router-dom";
 import { generateSchedule } from "../../utils/generateSchedule";
 import { FiArrowRight } from "react-icons/fi";
+import { BadgeExperience } from "../BadgeExperience";
 
 type TeacherCardProps = {
   teacher: TeachersProps;
@@ -86,7 +87,8 @@ export function TeacherCard({ teacher }: TeacherCardProps) {
               {userData?.name}
             </Link>
             <Text color={colors?.texts.base} fontSize="16px">
-              {getReadableSubject(teacher.subject)}
+              {getReadableSubject(teacher.subject)} -{" "}
+              {teacher && <BadgeExperience xp={teacher.xp} />}
             </Text>
           </Box>
         </Flex>

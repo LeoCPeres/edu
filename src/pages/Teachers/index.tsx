@@ -62,7 +62,8 @@ export function Teachers() {
               fontFamily="Poppins"
               fontSize="16"
             >
-              Nós temos 32 <br /> professores.
+              Nós temos {teachers?.length} <br /> professor
+              {teachers?.length > 1 && "es"}.
             </Text>
           </Flex>
         </Flex>

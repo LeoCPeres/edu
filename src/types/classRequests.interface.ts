@@ -8,4 +8,10 @@ export type ClassRequestsType = {
   teacherId: string;
   text: string;
   status: string;
+  recuseReasonData?: {
+    reason: number;
+    suggestClassDay?: string;
+    suggestClassFrom?: string;
+    suggestClassTo?: string;
+  };
 };

@@ -168,6 +168,8 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   }
 
   async function loadUserDataWithEmailAndPassword(uid: string) {
+    if (user != undefined) return;
+
     await getDoc(doc(db, "users", uid))
       .then((response) => {
         const userData = response.data() as UserType;

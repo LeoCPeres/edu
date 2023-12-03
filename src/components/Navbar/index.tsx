@@ -13,13 +13,14 @@ import {
   PopoverTrigger,
   Portal,
   Text,
+  Link,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useAuth } from "../../contexts/AuthContext";
 import { FiBell, FiPower } from "react-icons/fi";
 import { colors } from "../../styles/colors";
 import { useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { whichRoute } from "../../routes/whichRoute";
 import { AlertDialog } from "../AlertDialog";
@@ -102,7 +103,7 @@ export function Navbar() {
           >
             <FiPower />
           </Button>
-          <Notifications />
+          <Notifications user={user} />
         </Flex>
 
         <AlertDialog
@@ -138,9 +139,22 @@ export function Navbar() {
           name={user?.name}
           bg={colors?.primaryDark}
         />
-        <Text fontWeight="medium" fontSize="14px" color="#FFF">
-          {user?.name}
-        </Text>
+        {user?.teacherId ? (
+          <Link
+            onClick={() => {
+              navigate(`/profile/${user?.id}`);
+            }}
+            fontWeight="medium"
+            fontSize="14px"
+            color="#FFF"
+          >
+            {user?.name}
+          </Link>
+        ) : (
+          <Text fontWeight="medium" fontSize="14px" color="#FFF">
+            {user?.name}
+          </Text>
+        )}
       </Flex>
 
       <Flex gap="8px">
@@ -157,7 +171,7 @@ export function Navbar() {
         >
           <FiPower />
         </Button>
-        <Notifications />
+        <Notifications user={user} />
       </Flex>
 
       <AlertDialog

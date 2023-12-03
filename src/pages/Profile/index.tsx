@@ -1,4 +1,11 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Avatar,
   Box,
   Button,
@@ -26,7 +33,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useRoutes } from "react-router-dom";
 import { UserType } from "../../types/User.interface";
 import {
@@ -37,6 +44,7 @@ import {
   getDocs,
   query,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -81,6 +89,9 @@ export function Profile() {
   const [postText, setPostText] = useState("");
   const [isCreatingPost, setIsCreatingPost] = useState(false);
 
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isSavingPhoneNumber, setIsSavingPhoneNumber] = useState(false);
+
   const isMe = id === user?.id;
 
   const {
@@ -89,7 +100,14 @@ export function Profile() {
     onClose: onRequestClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isPhoneOpen,
+    onOpen: onPhoneOpen,
+    onClose: onPhoneClose,
+  } = useDisclosure();
+
   const toast = useToast();
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   async function handleRequestClass() {
     if (!isRequestOpen) {
@@ -222,6 +240,41 @@ export function Profile() {
     setPostText("");
   }
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    if (phoneNumber.length === 0) return `(  )`;
+
+    if (phoneNumber.length <= 2) {
+      return `(${phoneNumber})`;
+    } else if (phoneNumber.length <= 7) {
+      return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+    } else {
+      return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(
+        2,
+        7
+      )}-${phoneNumber.slice(7)}`;
+    }
+  };
+
+  const handlePhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const inputPhoneNumber = event.target.value;
+    const formattedPhoneNumber = inputPhoneNumber.replace(/\D/g, ""); // Remove todos os caracteres não numéricos
+    setPhoneNumber(formattedPhoneNumber);
+  };
+
+  async function handleSavePhoneNumber() {
+    if (user) {
+      setIsSavingPhoneNumber(true);
+      await updateDoc(doc(db, "users", user.id), {
+        phoneNumber: phoneNumber,
+      }).finally(() => {
+        setIsSavingPhoneNumber(false);
+      });
+
+      onPhoneClose();
+      onRequestOpen();
+    }
+  }
+
   return (
     <Flex direction="column" paddingX="250px" w="100%">
       <Toast />
@@ -283,7 +336,13 @@ export function Profile() {
                     bg={colors?.primary}
                     color="white"
                     colorScheme="none"
-                    onClick={onRequestOpen}
+                    onClick={() => {
+                      if (user?.phoneNumber || phoneNumber != "") {
+                        onRequestOpen();
+                      } else {
+                        onPhoneOpen();
+                      }
+                    }}
                   >
                     Solicitar horário
                   </Button>
@@ -437,6 +496,50 @@ export function Profile() {
           </Flex>
         </Flex>
       </Modal>
+
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={onPhoneClose}
+        isOpen={isPhoneOpen}
+        isCentered
+      >
+        <AlertDialogOverlay />
+
+        <AlertDialogContent>
+          <AlertDialogHeader>Cadastre uma forma de contato</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>
+            <FormControl>
+              <FormLabel>Whatsapp</FormLabel>
+              <Text fontSize="12px" mb="10px" mt="-10px">
+                O professor entrará em contato com você{" "}
+              </Text>
+              <Input
+                type="tel"
+                placeholder="(  )"
+                value={formatPhoneNumber(phoneNumber)}
+                onChange={handlePhoneNumberChange}
+                maxLength={15}
+              />
+            </FormControl>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={onPhoneClose}>
+              Cancelar
+            </Button>
+            <Button
+              colorScheme="none"
+              bg={colors?.primary}
+              ml={3}
+              onClick={handleSavePhoneNumber}
+              isLoading={isSavingPhoneNumber}
+            >
+              Salvar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Flex>
   );
 }

@@ -116,6 +116,7 @@ export function RegisterTeacher() {
           name: user?.name,
           avatar: user?.avatar,
           teacherId: res.id,
+          phoneNumber: phoneNumber,
         });
       }
 
