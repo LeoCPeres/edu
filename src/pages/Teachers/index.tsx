@@ -20,6 +20,8 @@ export function Teachers() {
   const { isOpen, onToggle } = useDisclosure();
 
   const [teachers, setTeachers] = useState([] as Array<TeachersProps>);
+  const [defaultTeachers, setDefaultTeachers] = useState([] as Array<TeachersProps>);
+  const [text, setText] = useState("")
 
   useEffect(() => {
     async function fetchData() {
@@ -32,6 +34,17 @@ export function Teachers() {
 
     fetchData();
   }, []);
+
+
+  useEffect(() => {
+    if(text == ""){
+      setTeachers(defaultTeachers)
+      return;
+    }
+
+    const newTeachers = defaultTeachers.filter(x => x.name.includes(text))
+    setTeachers(newTeachers)
+  }, [text])
 
   return (
     <Flex direction="column">
@@ -83,12 +96,10 @@ export function Teachers() {
               bg={colors?.gray150}
               placeholder="Digite o nome do professor que você procura"
               h="56px"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
             />
           </FormControl>
-
-          <Button onClick={onToggle} bg="#FFF">
-            Filtros avançados
-          </Button>
 
           <Collapse in={isOpen} animateOpacity>
             <Flex gap="16px">

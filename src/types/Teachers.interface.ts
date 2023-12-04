@@ -2,6 +2,7 @@ import { ScheduleType } from "./Schedule.interface";
 import { UserType } from "./User.interface";
 
 export type TeachersProps = {
+  name: string;
   biography: string;
   user_id: string;
   whatsapp: string;

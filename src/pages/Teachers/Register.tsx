@@ -101,6 +101,7 @@ export function RegisterTeacher() {
 
   async function handleRegisterTeacher() {
     await addDoc(collection(db, "teachers"), {
+      name: user?.name,
       user_id: user?.id,
       whatsapp: phoneNumber,
       biography,
