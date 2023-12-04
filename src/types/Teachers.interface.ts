@@ -11,4 +11,13 @@ export type TeachersProps = {
   schedule: ScheduleType[];
   userData?: UserType;
   xp: number;
+  rating: [
+    {
+      id: string;
+      userId: string;
+      createdAt: any;
+      rating: number;
+      comment: string;
+    }
+  ];
 };

@@ -1,4 +1,4 @@
-import { Flex, Toast, Text, Heading, Spinner } from "@chakra-ui/react";
+import { Flex, Text, Heading, Spinner } from "@chakra-ui/react";
 import { colors } from "../../styles/colors";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -6,26 +6,49 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { ConnectionsType } from "../../types/connections.interface";
 import { ClassCard } from "../../components/ClassCard";
+import { FiArrowRight } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 export function Classes() {
   const { user } = useAuth();
   const [connections, setConnections] = useState<Array<ConnectionsType>>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function getConnectionsList() {
       setIsLoading(true);
       if (user) {
-        const ref = collection(db, "connections");
-        const q = query(ref, where("teacherId", "==", user.id));
+        if (user?.teacherId) {
+          const ref = collection(db, "connections");
+          const q = query(ref, where("teacherId", "==", user.id));
 
-        const querySnapshot = await getDocs(q);
+          const querySnapshot = await getDocs(q);
 
-        const connectionsList = querySnapshot.docs.map(
-          (doc) => doc.data() as ConnectionsType
-        );
-        setIsLoading(false);
-        setConnections(connectionsList);
+          const connectionsList = querySnapshot.docs.map((doc) => {
+            return {
+              id: doc.id,
+              ...doc.data(),
+            } as ConnectionsType;
+          });
+          setIsLoading(false);
+          setConnections(connectionsList);
+        } else {
+          const ref = collection(db, "connections");
+          const q = query(ref, where("studentId", "==", user.id));
+
+          const querySnapshot = await getDocs(q);
+
+          const connectionsList = querySnapshot.docs.map((doc) => {
+            return {
+              id: doc.id,
+              ...doc.data(),
+            } as ConnectionsType;
+          });
+          setIsLoading(false);
+          setConnections(connectionsList);
+        }
       }
     }
 
@@ -33,6 +56,19 @@ export function Classes() {
       setIsLoading(false);
     });
   }, [user]);
+
+  async function handleCompleteClass(connectionId: string) {
+    const newClasses = connections.map((connection) =>
+      connection.id === connectionId
+        ? {
+            ...connection,
+            isCompleted: true,
+          }
+        : connection
+    );
+
+    setConnections(newClasses);
+  }
 
   return (
     <Flex direction="column">
@@ -52,7 +88,7 @@ export function Classes() {
               Estas são as <br /> suas aulas agendadas.
             </Heading>
             <Text color="#FFF" fontSize="16px">
-              Temos certeza de que seus alunos <br /> estão ansiosos por você.
+              Aguarde até que o <br /> professor entre em contato.
             </Text>
           </Flex>
           <Flex align="center" gap="16px">
@@ -63,7 +99,7 @@ export function Classes() {
               fontFamily="Poppins"
               fontSize="16"
             >
-              Total de 5 <br /> alunos desde o início.
+              Total de {connections.length} <br /> aulas desde o início.
             </Text>
           </Flex>
         </Flex>
@@ -75,7 +111,27 @@ export function Classes() {
         bg={colors?.background}
         minH="100vh"
       >
-        <Flex flexDir="column" mt="32px" gap="8px">
+        <Flex
+          mt="32px"
+          bg="#FFF"
+          borderRadius="8px"
+          borderColor={colors?.gray100}
+          borderWidth="1px"
+          px="24px"
+          py="8px"
+          alignItems="center"
+          gap="8px"
+          _hover={{
+            color: colors?.primary,
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/teachers")}
+        >
+          <Text fontSize="18px">Acesse a lista completa de professores</Text>
+          <FiArrowRight fontSize="18px" />
+        </Flex>
+
+        <Flex flexDir="column" mt="24px" gap="8px">
           {isLoading && connections?.length == 0 ? (
             <Flex w="100%" alignItems="center" justifyContent="center">
               <Spinner />
@@ -86,7 +142,11 @@ export function Classes() {
             </Flex>
           ) : (
             connections?.map((connection) => (
-              <ClassCard connection={connection} />
+              <ClassCard
+                connection={connection}
+                key={connection.id}
+                onComplete={handleCompleteClass}
+              />
             ))
           )}
         </Flex>

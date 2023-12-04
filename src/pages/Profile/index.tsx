@@ -34,7 +34,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams, useRoutes } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useRoutes,
+  useSearchParams,
+} from "react-router-dom";
 import { UserType } from "../../types/User.interface";
 import {
   collection,
@@ -63,6 +68,7 @@ import { FiFlag } from "react-icons/fi";
 import ExperienceBar from "../../components/ExperienceBar";
 import { Post } from "../../components/Post";
 import { PostType } from "../../types/post.interface";
+import { RateCard } from "../../components/RateCard";
 
 type ProfileParams = {
   id: string;
@@ -77,6 +83,8 @@ export function Profile() {
   const [scheduleData, setScheduleData] = useState<ScheduleType[]>([
     {} as ScheduleType,
   ]);
+
+  let [searchParams, setSearchParams] = useSearchParams();
 
   const [requestClassIsLoading, setRequestClassIsLoading] = useState(false);
   const [requestClassText, setRequestClassText] = useState("");
@@ -328,6 +336,13 @@ export function Profile() {
                     fontWeight="semibold"
                     gap="8px"
                     w="100%"
+                    onClick={() => {
+                      window.open(
+                        `https://wa.me/${teacherData?.whatsapp}`,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }}
                   >
                     <img src="/images/icons/Whatsapp.svg" alt="" /> Whatsapp
                   </Button>
@@ -356,7 +371,7 @@ export function Profile() {
             </Button>
           )}
 
-          {!isMe && (
+          {/* {!isMe && (
             <Button
               mt="8px"
               bg="#E33D3D"
@@ -367,17 +382,20 @@ export function Profile() {
               Reportar professor
               <FiFlag />
             </Button>
-          )}
+          )} */}
         </Flex>
 
         {teacherData && (
           <Flex w="100%">
-            <Tabs align="start" w="100%">
+            <Tabs
+              align="start"
+              w="100%"
+              defaultIndex={searchParams.get("avaliar") == "true" ? 3 : 0}
+            >
               <Flex w="100%" alignItems="center" justifyContent="flex-start">
                 <TabList>
                   <Tab>Horários</Tab>
                   <Tab onClick={handleFetchPosts}>Posts</Tab>
-                  <Tab>Conquistas</Tab>
                   <Tab>Avaliações</Tab>
                 </TabList>
               </Flex>
@@ -438,6 +456,13 @@ export function Profile() {
                     </Flex>
                   )}
                 </TabPanel>
+                <TabPanel>
+                  <Flex flexDirection="column" mt="16px" gap="8px">
+                    {teacherData?.rating?.map((rate) => (
+                      <RateCard rate={rate} />
+                    ))}
+                  </Flex>
+                </TabPanel>
               </TabPanels>
             </Tabs>
           </Flex>
@@ -468,18 +493,6 @@ export function Profile() {
                 type="date"
                 onChange={(e) => setRequestClassDay(e.target.value)}
               />
-              {/* <Select
-                placeholder="Selecione o dia"
-                onChange={(e) => setRequestClassDay(e.target.value)}
-              >
-                <option value="1">Segunda-feira</option>
-                <option value="2">Terça-feira</option>
-                <option value="3">Quarta-feira</option>
-                <option value="4">Quinta-feira</option>
-                <option value="5">Sexta-feira</option>
-                <option value="6">Sábado</option>
-                <option value="7">Domingo</option>
-              </Select> */}
             </FormControl>
           </Box>
           <Flex gap="8px">

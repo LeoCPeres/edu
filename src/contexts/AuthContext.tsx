@@ -63,6 +63,8 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
         const token = credential?.accessToken;
         const user = response?.user;
 
+        console.log(user);
+
         const isNewUser = await verifyNewUser(user?.uid);
 
         if (isNewUser) {
@@ -87,6 +89,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   async function signOutWithGoogle() {
     await signOut(auth).then(
       function () {
+        setUser(undefined);
         console.log("Signout Succesfull");
       },
       function (error) {

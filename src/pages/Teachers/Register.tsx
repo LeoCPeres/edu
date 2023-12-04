@@ -109,6 +109,7 @@ export function RegisterTeacher() {
       createdAt: new Date(),
       subject,
       xp: 0,
+      rating: {},
     }).then(async (res) => {
       if (user) {
         await setDoc(doc(db, "users", user?.id), {

@@ -30,6 +30,7 @@ export function MyRoutes() {
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<Profile />} />
+        <Route path="/profile/classes" element={<Classes />} />
 
         <Route path="*" element={<h1>404</h1>} />
       </Routes>

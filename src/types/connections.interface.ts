@@ -1,4 +1,5 @@
 export type ConnectionsType = {
+  id: string;
   createdAt: any;
   isCompleted: boolean;
   schedule: {

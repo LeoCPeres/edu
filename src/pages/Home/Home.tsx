@@ -6,17 +6,22 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useAuth } from "../../contexts/AuthContext";
+import { ConnectionsType } from "../../types/connections.interface";
 
 export function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [totalConnections, setTotalConnections] = useState(0);
+  const [connections, setConnections] = useState<Array<ConnectionsType>>([]);
 
   useEffect(() => {
     async function getTotalConnections() {
       await getDocs(collection(db, "connections")).then((res) => {
         if (!res.empty) {
           setTotalConnections(res.docs.length);
+
+          const con = res.docs.map((doc) => doc.data() as ConnectionsType);
+          setConnections(con);
         }
       });
     }
@@ -69,21 +74,40 @@ export function Home() {
           </Text>
 
           <Flex gap="16px">
-            <Button
-              bg={colors.primary}
-              color="#FFF"
-              w="301px"
-              h="104px"
-              borderRadius="8px"
-              fontSize="24px"
-              fontFamily="Archivo"
-              gap="24px"
-              colorScheme="none"
-              onClick={() => navigate("/teachers")}
-            >
-              <FiBookOpen color="#FFF" />
-              Estudar
-            </Button>
+            {connections.find((x) => x.studentId === user?.id) ? (
+              <Button
+                bg={colors.primary}
+                color="#FFF"
+                w="301px"
+                h="104px"
+                borderRadius="8px"
+                fontSize="24px"
+                fontFamily="Archivo"
+                gap="24px"
+                colorScheme="none"
+                onClick={() => navigate("/profile/classes")}
+              >
+                <FiBookOpen color="#FFF" />
+                Estudar
+              </Button>
+            ) : (
+              <Button
+                bg={colors.primary}
+                color="#FFF"
+                w="301px"
+                h="104px"
+                borderRadius="8px"
+                fontSize="24px"
+                fontFamily="Archivo"
+                gap="24px"
+                colorScheme="none"
+                onClick={() => navigate("/teachers")}
+              >
+                <FiBookOpen color="#FFF" />
+                Estudar
+              </Button>
+            )}
+
             {user?.teacherId ? (
               <Button
                 bg={colors.green}
