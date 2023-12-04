@@ -43,7 +43,7 @@ export function Teachers() {
       return;
     }
 
-    const newTeachers = defaultTeachers.filter(x => x.name.includes(text))
+    const newTeachers = defaultTeachers?.filter(x => x?.name?.includes(text))
     setTeachers(newTeachers)
   }, [text])
 
