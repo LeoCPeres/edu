@@ -30,6 +30,7 @@ export function Teachers() {
       const data = response.docs.map((doc) => doc.data() as TeachersProps);
 
       setTeachers(data);
+      setDefaultTeachers(data);
     }
 
     fetchData();
