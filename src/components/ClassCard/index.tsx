@@ -200,7 +200,7 @@ export function ClassCard({ connection, onComplete }: ClassCardProps) {
           </Text>
         )}
       </Flex>
-      {connection.studentId === user?.id && (
+      {connection.studentId === user?.id && connection.isCompleted === false (
         <Button bg={colors?.primary} colorScheme="none" onClick={onOpen}>
           Concluir aula
         </Button>
