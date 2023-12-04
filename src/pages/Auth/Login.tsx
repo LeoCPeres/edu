@@ -59,7 +59,7 @@ export function Login() {
           <Heading
             color="#FFF"
             fontFamily="Secular One"
-            fontSize="120px"
+            fontSize={["80px", "80px", "80px", "80px", "120px"]}
             margin="0"
             lineHeight="120px"
             marginRight="180px"
@@ -71,7 +71,7 @@ export function Login() {
             fontFamily="Poppins"
             maxWidth="229px"
             fontWeight="400"
-            fontSize="25px"
+            fontSize={["20px", "20px", "20px", "20px", "25px"]}
           >
             Sua plaforma de estudos online.
           </Heading>
@@ -83,8 +83,9 @@ export function Login() {
         w="45%"
         h="100%"
         direction="column"
+        justifyContent="center"
       >
-        <Flex mt="229px" w="352px" direction="column">
+        <Flex w="352px" direction="column">
           <Heading
             fontFamily="Poppins"
             fontWeight="semibold"

@@ -65,7 +65,7 @@ export function Navbar() {
         align="center"
         bgColor={colors.primaryDark}
         paddingY="24px"
-        paddingX="250px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "250px"]}
         position="fixed"
         maxH="64px"
         zIndex={1}
@@ -125,7 +125,7 @@ export function Navbar() {
       justify="space-between"
       align="center"
       paddingY="24px"
-      paddingX="250px"
+      paddingX={["160px", "160px", "160px", "160px", "150px", "250px"]}
       position="fixed"
       zIndex={1}
       bgColor={location.pathname == "/" ? colors.primary : colors.primaryDark}

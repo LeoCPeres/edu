@@ -42,12 +42,21 @@ export function Register() {
         direction="column"
       >
         <Link
-          style={{ width: "352px", marginTop: "27px", marginBottom: "-27px" }}
+          style={{
+            width: "352px",
+            marginTop: "27px",
+            marginBottom: "-27px",
+            height: "40px",
+          }}
           to="/login"
         >
           <img src="/images/icons/arrow-left.svg" alt="back" />
         </Link>
-        <Flex mt="229px" w="352px" direction="column">
+        <Flex
+          mt={["0", "100px", "100px", "100px", "100px", "229px"]}
+          w="352px"
+          direction="column"
+        >
           <Heading
             fontFamily="Poppins"
             fontWeight="semibold"

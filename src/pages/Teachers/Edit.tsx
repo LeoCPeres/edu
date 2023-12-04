@@ -132,7 +132,7 @@ export function EditTeacher() {
       <Flex
         bg={colors.primary}
         w="100%"
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         paddingTop="64px"
         paddingBottom="128px"
         alignItems="center"
@@ -155,7 +155,12 @@ export function EditTeacher() {
         </Flex>
       </Flex>
 
-      <Flex bg={colors.background} borderRadius="8px" paddingX="450px" flex={1}>
+      <Flex
+        bg={colors.background}
+        borderRadius="8px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
+        flex={1}
+      >
         <Flex
           w="100%"
           marginTop="-56px"

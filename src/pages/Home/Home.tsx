@@ -44,21 +44,33 @@ export function Home() {
           <Text
             fontFamily="Secular One"
             color="#FFF"
-            fontSize="98pt"
+            fontSize={["40px", "40px", "80px", "120px"]}
             lineHeight="70px"
           >
             Edu
           </Text>
 
-          <Text color="#FFF" fontSize="45pt" lineHeight="70px">
+          <Text
+            color="#FFF"
+            fontSize={["24px", "24px", "24px", "24px", "24px", "40px"]}
+            lineHeight={["24px", "24px", "24px", "24px", "24px", "40px"]}
+          >
             Sua plaforma de <br /> estudos online.
           </Text>
         </Flex>
 
-        <Image src="/images/Ilustra.svg" />
+        <Image
+          src="/images/Ilustra.svg"
+          maxW={["370px", "370px", "370px", "370px", "370px", "599px"]}
+        />
       </Flex>
 
-      <Flex paddingX="250px" justify="space-between" align="center" mt="56px">
+      <Flex
+        paddingX={["160px", "160px", "160px", "160px", "150px", "250px"]}
+        justify="space-between"
+        align="center"
+        mt="56px"
+      >
         <Box>
           <Text fontSize="20px" color={colors.texts.base}>
             Seja bem-vindo
@@ -78,8 +90,8 @@ export function Home() {
               <Button
                 bg={colors.primary}
                 color="#FFF"
-                w="301px"
-                h="104px"
+                w={["230px", "230px", "230px", "230px", "230px", "301px"]}
+                h={["80px", "80px", "80px", "80px", "80px", "104px"]}
                 borderRadius="8px"
                 fontSize="24px"
                 fontFamily="Archivo"
@@ -94,8 +106,8 @@ export function Home() {
               <Button
                 bg={colors.primary}
                 color="#FFF"
-                w="301px"
-                h="104px"
+                w={["230px", "230px", "230px", "230px", "230px", "301px"]}
+                h={["80px", "80px", "80px", "80px", "80px", "104px"]}
                 borderRadius="8px"
                 fontSize="24px"
                 fontFamily="Archivo"
@@ -112,8 +124,8 @@ export function Home() {
               <Button
                 bg={colors.green}
                 color="#FFF"
-                w="301px"
-                h="104px"
+                w={["230px", "230px", "230px", "230px", "230px", "301px"]}
+                h={["80px", "80px", "80px", "80px", "80px", "104px"]}
                 borderRadius="8px"
                 fontSize="24px"
                 fontFamily="Archivo"
@@ -128,8 +140,8 @@ export function Home() {
               <Button
                 bg={colors.green}
                 color="#FFF"
-                w="301px"
-                h="104px"
+                w={["230px", "230px", "230px", "230px", "230px", "301px"]}
+                h={["80px", "80px", "80px", "80px", "80px", "104px"]}
                 borderRadius="8px"
                 fontSize="24px"
                 fontFamily="Archivo"

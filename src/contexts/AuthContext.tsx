@@ -28,6 +28,7 @@ type AuthContextType = {
     name: string
   ) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
+  setUser: (user: UserType) => void;
 };
 
 type AuthContextProviderProps = {
@@ -186,10 +187,11 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
+        signInWithEmail,
         signInWithGoogle,
         signOutWithGoogle,
         registerUserWithEmailAndPassword,
-        signInWithEmail,
         loadUserDataWithEmailAndPassword,
       }}
     >

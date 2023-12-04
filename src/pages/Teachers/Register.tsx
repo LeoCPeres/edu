@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { ScheduleType } from "../../types/Schedule.interface";
 
 export function RegisterTeacher() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [biography, setBiography] = useState("");
   const [price, setPrice] = useState<number>(0);
@@ -119,6 +119,12 @@ export function RegisterTeacher() {
           teacherId: res.id,
           phoneNumber: phoneNumber,
         });
+
+        setUser({
+          ...user,
+          teacherId: res.id,
+          phoneNumber: phoneNumber,
+        });
       }
 
       onSuccessOpen();
@@ -136,7 +142,7 @@ export function RegisterTeacher() {
       <Flex
         bg={colors.primary}
         w="100%"
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         paddingTop="64px"
         paddingBottom="128px"
         alignItems="flex-end"
@@ -160,7 +166,12 @@ export function RegisterTeacher() {
         </Flex>
       </Flex>
 
-      <Flex bg={colors.background} borderRadius="8px" paddingX="450px" flex={1}>
+      <Flex
+        bg={colors.background}
+        borderRadius="8px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
+        flex={1}
+      >
         <Flex
           w="100%"
           marginTop="-56px"

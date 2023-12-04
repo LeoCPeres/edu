@@ -38,7 +38,7 @@ export function Teachers() {
       <Flex
         bg={colors.primary}
         w="100%"
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         paddingTop="64px"
         paddingBottom="128px"
         alignItems="flex-end"
@@ -70,7 +70,7 @@ export function Teachers() {
       </Flex>
 
       <Flex
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         direction="column"
         bg={colors?.background}
         minH="100vh"

@@ -284,12 +284,16 @@ export function Profile() {
   }
 
   return (
-    <Flex direction="column" paddingX="250px" w="100%">
+    <Flex
+      direction="column"
+      paddingX={["160px", "160px", "160px", "160px", "150px", "250px"]}
+      w="100%"
+    >
       <Toast />
 
       {isMe && teacherData && <ExperienceBar currentXP={teacherData.xp ?? 0} />}
 
-      <Flex mt="64px" gap="32px">
+      <Flex mt="64px" gap="32px" h="100vh">
         <Flex direction="column" w="35%">
           <Flex alignItems="center">
             <Avatar src={userData?.avatar} width="72px" h="72px" />
@@ -458,9 +462,10 @@ export function Profile() {
                 </TabPanel>
                 <TabPanel>
                   <Flex flexDirection="column" mt="16px" gap="8px">
-                    {teacherData?.rating?.map((rate) => (
-                      <RateCard rate={rate} />
-                    ))}
+                    {teacherData?.rating.length > 0 &&
+                      teacherData?.rating?.map((rate) => (
+                        <RateCard rate={rate} />
+                      ))}
                   </Flex>
                 </TabPanel>
               </TabPanels>

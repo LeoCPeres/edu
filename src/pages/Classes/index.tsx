@@ -75,7 +75,7 @@ export function Classes() {
       <Flex
         bg={colors.primary}
         w="100%"
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         paddingTop="64px"
         paddingBottom="64px"
         alignItems="flex-end"
@@ -106,7 +106,7 @@ export function Classes() {
       </Flex>
 
       <Flex
-        paddingX="450px"
+        paddingX={["160px", "160px", "160px", "160px", "150px", "450px"]}
         direction="column"
         bg={colors?.background}
         minH="100vh"
